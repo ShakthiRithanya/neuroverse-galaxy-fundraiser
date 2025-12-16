@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Registration {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  phone         String
+  rollNo        String?
+  studentClass  String?
+  stallId       String
+  stallName     String?
+  paymentStatus     String   @default("Pending")
+  amount            Int      @default(100)
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  createdAt         DateTime @default(now())
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  name      String
+  comment   String
+  rating    Int
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+}
+
+model Student {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model EventSettings {
+  id             String  @id @default(uuid())
+  stall1Revealed Boolean @default(false)
+  stall2Revealed Boolean @default(false)
+  stall3Revealed Boolean @default(false)
+}

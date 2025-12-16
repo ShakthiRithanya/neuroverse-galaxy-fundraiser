@@ -1,0 +1,20 @@
+[
+    {
+        "id": "1",
+        "name": "Student A",
+        "email": "student_a@college.edu",
+        "phone": "555-1234",
+        "stallId": "stall-1",
+        "stallName": "Stall 1",
+        "paymentStatus": "Paid"
+    },
+    {
+        "id": "2",
+        "name": "Student B",
+        "email": "student_b@college.edu",
+        "phone": "555-5678",
+        "stallId": "stall-2",
+        "stallName": "Stall 2",
+        "paymentStatus": "Pending"
+    }
+]

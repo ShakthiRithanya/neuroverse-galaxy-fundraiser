@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { CreditCard, User, Mail, Phone, Music, Glasses, MessageCircle, CheckCircle } from 'lucide-react';
+import { User, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // Type definitions
 type PackageType = 'BASIC' | 'PREMIUM';
+
+
 
 interface PackageOption {
     id: string;
@@ -87,57 +89,26 @@ const BookingPage = () => {
 
         setLoading(true);
         try {
-            // 1. Create Order & Registration
             const res = await axios.post('http://localhost:5000/api/registrations', {
                 ...formData,
-                stallId: selectedPackage.id, // Using package ID as stall ID. 
-                stallName: selectedPackage.title + ` (${selectedPackage.type})`
+                stallId: selectedPackage.id,
+                stallName: selectedPackage.title + ` (${selectedPackage.type})`,
+                amount: selectedPackage.price
             });
 
-            const { order, registration } = res.data;
-
-            // 2. Open Razorpay
-            const options = {
-                key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-                amount: order.amount,
-                currency: order.currency,
-                name: "Neuroverse Galaxy",
-                description: `Payment for ${selectedPackage.title}`,
-                order_id: order.id,
-                handler: async function (response: any) {
-                    try {
-                        await axios.post('http://localhost:5000/api/verify-payment', {
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_signature: response.razorpay_signature,
-                            registrationId: registration.id
-                        });
-                        alert('Payment Successful! Thank you for your support.');
-                        navigate('/');
-                    } catch (error) {
-                        console.error("Payment verification failed", error);
-                        alert('Payment verification failed.');
-                    }
-                },
-                prefill: {
-                    name: formData.name,
-                    email: formData.email,
-                    contact: formData.phone
-                },
-                theme: {
-                    color: activeTab === 'BASIC' ? "#00f3ff" : "#bc13fe"
+            // Navigate to Payment Page
+            navigate('/payment', {
+                state: {
+                    registration: {
+                        id: res.data.registration.id,
+                        stallName: selectedPackage.title + ` (${selectedPackage.type})`
+                    },
+                    amount: selectedPackage.price
                 }
-            };
-
-            const rzp1 = new window.Razorpay(options);
-            rzp1.on('payment.failed', function (response: any) {
-                alert(response.error.description);
             });
-            rzp1.open();
-
-        } catch (error) {
-            console.error(error);
-            alert('Registration failed. Please Check Backend.');
+        } catch (err) {
+            console.error(err);
+            alert('Registration failed. Contact admin.');
         } finally {
             setLoading(false);
         }
@@ -331,7 +302,7 @@ const BookingPage = () => {
                                 cursor: (!selectedPackage || loading) ? 'not-allowed' : 'pointer'
                             }}
                         >
-                            {loading ? 'Processing...' : `Pay Now (₹${selectedPackage ? selectedPackage.price : 0})`}
+                            {loading ? 'Processing...' : `Book Now (₹${selectedPackage ? selectedPackage.price : 0})`}
                         </button>
                         <p style={{ marginTop: '1rem', fontSize: '0.9rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                             This is a charity event. Your contribution supports the medical treatment of our student, <strong>Karuppusamy B</strong>.

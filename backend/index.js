@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import Razorpay from 'razorpay';
-import crypto from 'crypto';
 
 dotenv.config();
 
@@ -11,19 +9,12 @@ const app = express();
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
 
+
+
+
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Check for Razorpay Keys
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-  console.warn("WARNING: Razorpay keys not found in .env. Payment features will fail.");
-}
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_placeholder',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'secret_placeholder'
-});
 
 // --- ROUTES ---
 
@@ -92,23 +83,15 @@ app.post('/api/student/login', async (req, res) => {
   }
 });
 
-// Create Registration & Razorpay Order
+// Create Registration (Simple, no payment integration)
 app.post('/api/registrations', async (req, res) => {
   try {
-    const { name, email, phone, rollNo, studentClass, stallId, stallName } = req.body;
-    const amount = 10000; // Fixed amount in paise (100 INR) -> 100 * 100.
-    // NOTE: In production, fetch price from DB based on stallId
+    const {
+      name, email, phone, rollNo, studentClass,
+      stallId, stallName, amount
+    } = req.body;
 
-    // 1. Create Razorpay Order
-    const options = {
-      amount: amount,
-      currency: "INR",
-      receipt: "receipt#" + Date.now(),
-    };
-
-    const order = await razorpay.orders.create(options);
-
-    // 2. Create Registration in DB (Pending)
+    // Create Registration in DB
     const registration = await prisma.registration.create({
       data: {
         name,
@@ -118,51 +101,18 @@ app.post('/api/registrations', async (req, res) => {
         studentClass,
         stallId,
         stallName,
-        paymentStatus: 'Pending',
-        amount: amount / 100, // Store in Rupee
-        razorpayOrderId: order.id
+        paymentStatus: 'Pending', // Default to Pending, admin can update
+        amount: amount || 0
       }
     });
 
     res.status(201).json({
       registration,
-      order // Send order details to frontend
+      message: "Registration successful"
     });
   } catch (error) {
-    console.error("Error creating order:", error);
+    console.error("Error creating registration:", error);
     res.status(400).json({ message: "Registration failed", error: error.message });
-  }
-});
-
-// Verify Payment
-app.post('/api/verify-payment', async (req, res) => {
-  try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, registrationId } = req.body;
-
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-
-    const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
-      .digest('hex');
-
-    if (expectedSignature === razorpay_signature) {
-      // Payment Successful
-      const updatedReg = await prisma.registration.update({
-        where: { id: registrationId },
-        data: {
-          paymentStatus: 'Paid',
-          razorpayPaymentId: razorpay_payment_id
-        }
-      });
-
-      res.json({ message: "Payment verified successfully", registration: updatedReg });
-    } else {
-      res.status(400).json({ message: "Invalid signature" });
-    }
-  } catch (error) {
-    console.error("Payment verification failed", error);
-    res.status(500).json({ message: error.message });
   }
 });
 
@@ -173,6 +123,19 @@ app.get('/api/registrations', async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     res.json(registrations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get Single Registration (Public - for payment status check)
+app.get('/api/registrations/:id', async (req, res) => {
+  try {
+    const registration = await prisma.registration.findUnique({
+      where: { id: req.params.id }
+    });
+    if (!registration) return res.status(404).json({ message: 'Registration not found' });
+    res.json(registration);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

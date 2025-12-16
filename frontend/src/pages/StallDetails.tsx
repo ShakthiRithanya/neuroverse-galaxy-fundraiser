@@ -4,13 +4,6 @@ import { stalls } from './Home';
 import { CreditCard, User, Mail, Phone } from 'lucide-react';
 import axios from 'axios';
 
-// Define the Razorpay global
-declare global {
-    interface Window {
-        Razorpay: any;
-    }
-}
-
 const StallDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -25,49 +18,7 @@ const StallDetails = () => {
 
     if (!stall) return <div className="container">Stall not found</div>;
 
-    const handlePayment = async (order: any, registrationId: string) => {
-        const options = {
-            key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
-            amount: order.amount,
-            currency: order.currency,
-            name: "Neuroverse Galaxy",
-            description: `Payment for ${stall.name}`,
-            order_id: order.id,
-            handler: async function (response: any) {
-                try {
-                    setLoading(true);
-                    await axios.post('http://localhost:5000/api/verify-payment', {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        registrationId: registrationId
-                    });
-                    alert('Payment Successful! Your registration is confirmed.');
-                    navigate('/');
-                } catch (error) {
-                    console.error("Payment verification failed", error);
-                    alert('Payment verification failed. Please contact support.');
-                } finally {
-                    setLoading(false);
-                }
-            },
-            prefill: {
-                name: formData.name,
-                email: formData.email,
-                contact: formData.phone
-            },
-            theme: {
-                color: "#00f3ff"
-            }
-        };
 
-        const rzp1 = new window.Razorpay(options);
-        rzp1.on('payment.failed', function (response: any) {
-            alert(response.error.description);
-            setLoading(false);
-        });
-        rzp1.open();
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -77,13 +28,20 @@ const StallDetails = () => {
             const res = await axios.post('http://localhost:5000/api/registrations', {
                 ...formData,
                 stallId: id,
-                stallName: stall.name
+                stallName: stall.name,
+                amount: 100 // Default Mock Amount
             });
 
-            const { order, registration } = res.data;
-
-            // 2. Open Razorpay
-            await handlePayment(order, registration.id);
+            // Navigate to Payment Page
+            navigate('/payment', {
+                state: {
+                    registration: {
+                        id: res.data.registration.id,
+                        stallName: stall.name
+                    },
+                    amount: 100
+                }
+            });
 
         } catch (error) {
             console.error(error);
@@ -109,7 +67,7 @@ const StallDetails = () => {
 
             <div style={{ background: 'var(--background)', padding: '2rem', borderRadius: '1rem', border: '1px solid var(--border)' }}>
                 <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <CreditCard className="text-primary" /> Register & Pay
+                    <CreditCard className="text-primary" /> Register
                 </h2>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -159,11 +117,8 @@ const StallDetails = () => {
                     </div>
 
                     <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }} disabled={loading}>
-                        {loading ? 'Processing...' : 'Proceed to Payment (₹100)'}
+                        {loading ? 'Processing...' : 'Register Now (₹100)'}
                     </button>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-                        * Secured by Razorpay
-                    </p>
                 </form>
             </div>
         </div>

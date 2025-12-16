@@ -193,10 +193,16 @@ const AdminDashboard = () => {
                                         <td style={{ padding: '1rem' }}>
                                             <button
                                                 onClick={() => togglePayment(reg.id)}
-                                                className="btn btn-secondary"
-                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem', marginRight: '0.5rem' }}
+                                                className={reg.paymentStatus === 'Paid' ? 'btn btn-secondary' : 'btn btn-primary'}
+                                                style={{
+                                                    padding: '0.4rem 0.8rem',
+                                                    fontSize: '0.8rem',
+                                                    marginRight: '0.5rem',
+                                                    background: reg.paymentStatus === 'Paid' ? 'rgba(255,255,255,0.1)' : 'var(--success)',
+                                                    borderColor: reg.paymentStatus === 'Paid' ? 'var(--border)' : 'transparent'
+                                                }}
                                             >
-                                                Toggle Status
+                                                {reg.paymentStatus === 'Paid' ? 'Mark Pending' : 'Mark Paid'}
                                             </button>
                                             <button
                                                 onClick={() => deleteRegistration(reg.id)}

@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import StudentLogin from './pages/StudentLogin';
 import StudentRegister from './pages/StudentRegister';
 import BookingPage from './pages/BookingPage';
+import PaymentPage from './pages/PaymentPage';
 
 import AdminLayout from './components/AdminLayout';
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="feedback" element={<Feedback />} />
         <Route path="about" element={<About />} />
         <Route path="booking" element={<BookingPage />} />
+        <Route path="payment" element={<PaymentPage />} />
 
         {/* Student Auth */}
         <Route path="login" element={<StudentLogin />} />

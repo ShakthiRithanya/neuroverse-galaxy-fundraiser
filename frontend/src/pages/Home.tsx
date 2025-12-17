@@ -1,37 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-
-export const stalls = [
-    {
-        id: 'stall-1',
-        name: 'Stall 1',
-        label: 'Echo Mandalam',
-        description: 'Create music with YOUR voice! Record, choose a style, and let AI generate a hit song.',
-        image: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80',
-        fullDescription: 'Welcome to Echo Mandalam, where your voice becomes the instrument. Step into our soundproof booth, record a few lines, and select a genre (Pop, Classical, or EDM). Our advanced AI will analyze your vocal timbre and compose a unique, fully produced song featuring YOUR voice as the lead. Take home your personal hit single!'
-    },
-    {
-        id: 'stall-2',
-        name: 'Stall 2',
-        label: 'Cosmic Mandalam',
-        description: 'Dive into immersive VR worlds: Jurassic Park, Snow World, Space & more!',
-        image: '/cosmic_mandalam.png',
-        fullDescription: 'Enter the Cosmic Mandalam and transport yourself to impossible realities. Put on our high-end VR headsets and choose your adventure. Walk among giants in Jurassic Park, feel the chill of the Snow World, float through zero-gravity in Space, and explore other breathtaking dimensions. A visual journey unlike any other.'
-    },
-    {
-        id: 'stall-3',
-        name: 'Stall 3',
-        label: 'AI Mandalam',
-        description: 'Speak with AI celebrities & personalities! Have real voice conversations with anyone you wish.',
-        image: '/ai_mandalam.png',
-        fullDescription: 'AI Mandalam brings history and fame to your fingertips. Interact with ultra-realistic AI avatars of your favorite celebrities, historical figures, or idols. Using state-of-the-art voice synthesis and generative AI, you can hold dynamic, real-time spoken conversations with the personalities you\'ve always wanted to meet.'
-    }
-];
-
-
 import { useState, useEffect } from 'react';
-
 import axios from 'axios';
+import { stalls } from '../data/stalls';
 
 const Home = () => {
     const [settings, setSettings] = useState({
@@ -177,7 +148,7 @@ const Home = () => {
                             <div key={stall.id} className="glass-panel" style={{ overflow: 'hidden', transition: 'all 0.3s', border: '1px solid rgba(0, 243, 255, 0.1)' }}>
                                 <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', top: 0, left: 0, padding: '0.5rem 1rem', background: 'var(--primary)', color: 'black', fontWeight: 'bold', zIndex: 10 }}>
-                                        {stall.name}
+                                        {stall.label}
                                     </div>
                                     <img
                                         src={stall.image}
@@ -194,7 +165,7 @@ const Home = () => {
                                     />
                                 </div>
                                 <div style={{ padding: '1.5rem', background: 'linear-gradient(180deg, rgba(20,20,30,0) 0%, rgba(0,243,255,0.05) 100%)' }}>
-                                    <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--text)' }}>{stall.label}</h3>
+                                    <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--text)' }}>{stall.name}</h3>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>{stall.description}</p>
                                     <Link to={`/stalls/${stall.id}`} className="btn btn-secondary" style={{ width: '100%', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
                                         View Details
@@ -206,7 +177,7 @@ const Home = () => {
                             <div key={stall.id} className="glass-panel" style={{ overflow: 'hidden', transition: 'all 0.3s', border: '1px solid rgba(255, 215, 0, 0.3)' }}>
                                 <div style={{ height: '200px', overflow: 'hidden', position: 'relative' }}>
                                     <div style={{ position: 'absolute', top: 0, left: 0, padding: '0.5rem 1rem', background: 'var(--primary)', color: 'black', fontWeight: 'bold', zIndex: 10 }}>
-                                        {stall.name}
+                                        {stall.label}
                                     </div>
                                     <img
                                         src={stall.image}
@@ -229,7 +200,7 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div style={{ padding: '1.5rem', background: 'linear-gradient(180deg, rgba(20,20,30,0) 0%, rgba(0,243,255,0.05) 100%)' }}>
-                                    <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--text)' }}>{stall.label}</h3>
+                                    <h3 style={{ fontSize: '1.4rem', marginBottom: '0.5rem', color: 'var(--text)' }}>{stall.name}</h3>
                                     <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>{stall.description}</p>
                                     <button disabled className="btn" style={{
                                         width: '100%',

@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import { stalls } from './Home';
+import { stalls } from '../data/stalls';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -52,7 +52,7 @@ const Stalls = () => {
                                         padding: '1rem'
                                     }}>
                                         <h3 style={{ fontSize: '1.5rem', color: 'white', fontFamily: 'var(--font-mono)' }}>
-                                            {stall.name} <span style={{ fontSize: '0.9rem', opacity: 0.8, display: 'block', color: 'var(--primary)' }}>{stall.label}</span>
+                                            {stall.label} <span style={{ fontSize: '0.9rem', opacity: 0.8, display: 'block', color: 'var(--primary)' }}>{stall.name}</span>
                                         </h3>
                                     </div>
                                 ) : (

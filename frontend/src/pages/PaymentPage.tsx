@@ -9,12 +9,7 @@ const PaymentPage = () => {
     const { registration, amount } = location.state || {}; // Expecting registration object and amount
 
     const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'GPAY' | null>(null);
-    const [status, setStatus] = useState<'Pending' | 'Paid'>('Pending');
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-    // Add useEffect import manually or assume it's there (it was passed in `imports` above usually, but here I am replacing body.
-    // Wait, the file content view shows `import { useState } from 'react';` at line 1. I need to update imports too if I can't do it in one go.
-    // I will replace the WHOLE file content to be safe and ensure all imports are correct.
 
     useEffect(() => {
         if (!registration?.id) return;
@@ -24,7 +19,6 @@ const PaymentPage = () => {
             try {
                 const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/registrations/${registration.id}`);
                 if (res.data.paymentStatus === 'Paid') {
-                    setStatus('Paid');
                     setShowSuccessModal(true);
                     clearInterval(interval);
                 }
@@ -130,11 +124,15 @@ const PaymentPage = () => {
                     <div className="animate-fade-in" style={{ textAlign: 'center', padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '1rem' }}>
                         <h3 style={{ marginBottom: '1rem' }}>Scan to Pay</h3>
                         <div style={{ background: '#fff', padding: '1rem', display: 'inline-block', borderRadius: '0.5rem', marginBottom: '1rem' }}>
-                            <img src="/qr_code.png" alt="Payment QR Code" style={{ width: '200px', height: '200px', display: 'block' }} />
+                            <img src="/payment_qr.jpg" alt="Payment QR Code" style={{ width: '200px', height: 'auto', display: 'block' }} />
                         </div>
-                        <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
-                            Scan this QR code using Google Pay.
+                        <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                            Scan to pay with any UPI app
                         </p>
+                        <div style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '0.5rem', display: 'inline-block' }}>
+                            <div style={{ fontWeight: 'bold', color: 'var(--text)' }}>Nirmaladevi J</div>
+                            <div style={{ fontFamily: 'monospace' }}>jvandana25-1@okaxis</div>
+                        </div>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--warning)' }}>
                             <Loader size={20} className="spin" /> Waiting for admin approval...
                         </div>

@@ -268,7 +268,9 @@ const AdminDashboard = () => {
                                         gap: '1rem',
                                         transition: 'all 0.3s'
                                     }}>
-                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Stall {index + 1}</h3>
+                                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
+                                            {['Echo Mandalam', 'Cosmic Mandalam', 'AI Mandalam'][index]} (Stall {index + 1})
+                                        </h3>
                                         <div style={{ fontSize: '3rem', color: isRevealed ? 'green' : 'red' }}>
                                             {isRevealed ? <Eye /> : <EyeOff />}
                                         </div>

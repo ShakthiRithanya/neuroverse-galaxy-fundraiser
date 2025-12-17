@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ShoppingBag, MessageSquare, Info, CreditCard } from 'lucide-react';
+import { Home, ShoppingBag, MessageSquare, Info } from 'lucide-react';
 
 const Navbar = () => {
     const location = useLocation();
@@ -11,7 +11,6 @@ const Navbar = () => {
         { path: '/stalls', label: 'Stalls', icon: ShoppingBag },
         { path: '/feedback', label: 'Feedback', icon: MessageSquare },
         { path: '/about', label: 'About', icon: Info },
-        { path: '/booking', label: 'Book Now', icon: CreditCard },
     ];
 
     return (

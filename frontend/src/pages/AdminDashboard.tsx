@@ -153,69 +153,93 @@ const AdminDashboard = () => {
                 )}
 
                 {activeTab === 'registrations' && (
-                    <div className="glass-panel" style={{ padding: '2rem' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                                <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
-                                    <th style={{ padding: '1rem' }}>Name</th>
-                                    <th style={{ padding: '1rem' }}>Stall</th>
-                                    <th style={{ padding: '1rem' }}>Contact</th>
-                                    <th style={{ padding: '1rem' }}>Status</th>
-                                    <th style={{ padding: '1rem' }}>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {registrations.map(reg => (
-                                    <tr key={reg.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <td style={{ padding: '1rem' }}>{reg.name}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{
-                                                background: 'rgba(255,255,255,0.1)',
-                                                padding: '0.2rem 0.6rem',
-                                                borderRadius: '1rem',
-                                                fontSize: '0.8rem'
-                                            }}>
-                                                {reg.stallName}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{reg.email}</td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <span style={{
-                                                color: reg.paymentStatus === 'Paid' ? 'var(--success)' : 'var(--warning)',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '0.4rem'
-                                            }}>
-                                                {reg.paymentStatus === 'Paid' ? <CheckCircle size={16} /> : <XCircle size={16} />}
-                                                {reg.paymentStatus}
-                                            </span>
-                                        </td>
-                                        <td style={{ padding: '1rem' }}>
-                                            <button
-                                                onClick={() => togglePayment(reg.id)}
-                                                className={reg.paymentStatus === 'Paid' ? 'btn btn-secondary' : 'btn btn-primary'}
-                                                style={{
-                                                    padding: '0.4rem 0.8rem',
-                                                    fontSize: '0.8rem',
-                                                    marginRight: '0.5rem',
-                                                    background: reg.paymentStatus === 'Paid' ? 'rgba(255,255,255,0.1)' : 'var(--success)',
-                                                    borderColor: reg.paymentStatus === 'Paid' ? 'var(--border)' : 'transparent'
-                                                }}
-                                            >
-                                                {reg.paymentStatus === 'Paid' ? 'Mark Pending' : 'Mark Paid'}
-                                            </button>
-                                            <button
-                                                onClick={() => deleteRegistration(reg.id)}
-                                                className="btn btn-secondary"
-                                                style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: 'var(--error)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                        {['stall-1', 'stall-2', 'stall-3'].map((stallId, index) => {
+                            const stallName = ['Echo Mandalam', 'Cosmic Mandalam', 'AI Mandalam'][index];
+                            const stallRegs = registrations.filter(r =>
+                                // Robust check for stall ID in the registration data
+                                // The registration data stores stallId (e.g., 'music-karaoke...')
+                                // We need to check if the registration's stallId belongs to this stall group
+                                (stallId === 'stall-1' && r.stallId.toLowerCase().includes('music')) ||
+                                (stallId === 'stall-2' && r.stallId.toLowerCase().includes('vr')) ||
+                                (stallId === 'stall-3' && r.stallId.toLowerCase().includes('interaction'))
+                            );
+
+                            return (
+                                <div key={stallId} className="glass-panel" style={{ padding: '2rem' }}>
+                                    <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '1rem' }}>
+                                        {stallName} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>({stallRegs.length} Registrations)</span>
+                                    </h2>
+
+                                    {stallRegs.length === 0 ? (
+                                        <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>No registrations for this stall yet.</p>
+                                    ) : (
+                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                            <thead>
+                                                <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                                                    <th style={{ padding: '1rem' }}>Name</th>
+                                                    <th style={{ padding: '1rem' }}>Package</th>
+                                                    <th style={{ padding: '1rem' }}>Contact</th>
+                                                    <th style={{ padding: '1rem' }}>Status</th>
+                                                    <th style={{ padding: '1rem' }}>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {stallRegs.map(reg => (
+                                                    <tr key={reg.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                                        <td style={{ padding: '1rem' }}>{reg.name}</td>
+                                                        <td style={{ padding: '1rem' }}>
+                                                            <span style={{
+                                                                background: 'rgba(255,255,255,0.1)',
+                                                                padding: '0.2rem 0.6rem',
+                                                                borderRadius: '1rem',
+                                                                fontSize: '0.8rem'
+                                                            }}>
+                                                                {reg.stallName}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '1rem', color: 'var(--text-muted)' }}>{reg.email}</td>
+                                                        <td style={{ padding: '1rem' }}>
+                                                            <span style={{
+                                                                color: reg.paymentStatus === 'Paid' ? 'var(--success)' : 'var(--warning)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.4rem'
+                                                            }}>
+                                                                {reg.paymentStatus === 'Paid' ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                                                                {reg.paymentStatus}
+                                                            </span>
+                                                        </td>
+                                                        <td style={{ padding: '1rem' }}>
+                                                            <button
+                                                                onClick={() => togglePayment(reg.id)}
+                                                                className={reg.paymentStatus === 'Paid' ? 'btn btn-secondary' : 'btn btn-primary'}
+                                                                style={{
+                                                                    padding: '0.4rem 0.8rem',
+                                                                    fontSize: '0.8rem',
+                                                                    marginRight: '0.5rem',
+                                                                    background: reg.paymentStatus === 'Paid' ? 'rgba(255,255,255,0.1)' : 'var(--success)',
+                                                                    borderColor: reg.paymentStatus === 'Paid' ? 'var(--border)' : 'transparent'
+                                                                }}
+                                                            >
+                                                                {reg.paymentStatus === 'Paid' ? 'Mark Pending' : 'Mark Paid'}
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deleteRegistration(reg.id)}
+                                                                className="btn btn-secondary"
+                                                                style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', color: 'var(--error)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
 

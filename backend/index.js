@@ -202,12 +202,18 @@ app.get('/api/stats', async (req, res) => {
   try {
     const totalRegistrations = await prisma.registration.count();
     const totalFeedback = await prisma.feedback.count();
-    const paidRegistrations = await prisma.registration.count({ where: { paymentStatus: 'Paid' } });
+
+    // Calculate revenue based on actual amounts of Paid registrations
+    const revenueAgg = await prisma.registration.aggregate({
+      _sum: { amount: true },
+      where: { paymentStatus: 'Paid' }
+    });
+    const totalRevenue = revenueAgg._sum.amount || 0;
 
     res.json({
       totalRegistrations,
       totalFeedback,
-      totalRevenue: paidRegistrations * 100
+      totalRevenue
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
